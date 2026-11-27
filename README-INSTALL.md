@@ -17,3 +17,7 @@ Open the URL in Safari, tap Share, then Add to Home Screen.
 Daily habit tracking, 365-day heatmap, focus timer with completion beep, GPS exercise distance and duration tracking, five-minute spoken encouragement, reflections, insights, and local backup.
 
 GPS needs HTTPS and location permission. Mobile browsers can suspend GPS and timers while backgrounded or when the screen is locked, so keep the app open for the most reliable tracking. Data is stored locally in the browser; export backups regularly.
+
+
+## MoveMate voice coach
+MoveMate welcomes the user when an outdoor session starts, gives rotating encouragement every five active minutes, celebrates each whole kilometre, and congratulates the user when the session is finished. Voice can be turned off in the exercise panel; the preference is saved on the device. The browser's built-in speech synthesis is used, so available voices depend on the device and browser.

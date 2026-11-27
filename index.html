@@ -145,6 +145,14 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
 
+
+.coach-card{box-shadow:inset 0 1px 0 rgba(255,255,255,.025);transition:border-color .2s ease,background .2s ease}
+.coach-card:hover{border-color:rgba(184,239,194,.32)!important}
+.coach-card label{cursor:pointer;white-space:nowrap}
+.coach-card input{width:16px;height:16px;cursor:pointer}
+#coachMessage{min-height:44px}
+#coachTest{font-size:11px}
+
 </style></head>
 <body><div class="app">
 <header class="top"><div class="brand"><div class="mark">365</div><div><h1>ONE YEAR PROJECT</h1><p>Small actions. A different life.</p></div></div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="icon-btn" id="installBtn" type="button">Install app</button><div class="date-pill" id="todayLabel"></div></div></header>
@@ -165,7 +173,20 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
     <button class="secondary" id="exercisePause" disabled>Pause</button>
     <button class="secondary" id="exerciseFinish" disabled>Finish</button>
   </div>
-  <div class="muted" style="margin-top:10px">A spoken “Keep going and keep moving!” reminder plays every five active minutes.</div>
+  <div class="coach-card" style="margin-top:16px;padding:15px 16px;border:1px solid rgba(184,239,194,.18);border-radius:16px;background:linear-gradient(135deg,rgba(39,76,48,.34),rgba(13,24,16,.55))">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:38px;height:38px;display:grid;place-items:center;border-radius:13px;background:rgba(184,239,194,.12);font-size:19px">✦</div>
+        <div><strong style="display:block;font-size:13px">MoveMate</strong><span class="muted" style="font-size:10px">YOUR PERSONAL MOVEMENT COACH</span></div>
+      </div>
+      <label style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)">
+        <input id="coachVoiceToggle" type="checkbox" checked style="accent-color:var(--green2)"> Voice on
+      </label>
+    </div>
+    <div id="coachMessage" style="font-size:13px;line-height:1.65;margin-top:13px;color:var(--soft)">“I'm here to keep you encouraged, one step at a time. Let's make today count!”</div>
+    <button class="icon-btn" id="coachTest" type="button" style="margin-top:11px">▶ Hear MoveMate</button>
+  </div>
+  <div class="muted" style="margin-top:10px">MoveMate shares encouragement every five active minutes and celebrates each kilometre. You can turn voice off anytime.</div>
 </div></div>
 <div class="panel"><h3>How was today?</h3><div class="muted">A quick check-in, without judgement.</div><div class="mood-row" id="moods"><button class="mood" data-mood="1">😞</button><button class="mood" data-mood="2">😕</button><button class="mood" data-mood="3">😐</button><button class="mood" data-mood="4">🙂</button><button class="mood" data-mood="5">🔥</button></div><textarea class="field notes" id="dayNote" placeholder="What went well? What did you learn? What will you improve tomorrow?"></textarea><button class="secondary" style="margin-top:9px;width:100%" id="saveNote">Save reflection</button></div></div></section>
 <section id="yearView" class="panel hidden"><div class="panel-head"><div><h3>Your consistency map</h3><div class="muted">Every square is a day. Tap one to review it.</div></div><span class="tag">365 DAYS</span></div><div class="year-wrap"><div class="heatmap" id="heatmap"></div></div><div class="legend">Less <i></i><i></i><i></i><i></i> More</div><div class="muted" id="heatCaption" style="margin-top:14px"></div></section>
@@ -292,15 +313,53 @@ function renderExercise(){
   document.getElementById('exerciseFinish').disabled=!exerciseActive;
   document.getElementById('exercisePause').textContent=exercisePaused?'Resume':'Pause';
 }
-function movementEncouragement(){
-  const phrase='Keep going and keep moving!';
+const COACH_VOICE_KEY='365_movemate_voice_enabled';
+let coachVoiceEnabled=localStorage.getItem(COACH_VOICE_KEY)!=='false';
+let lastDistanceMilestone=0;
+const coachMessages={
+  welcome:"Let's get moving! Your journey starts now. Find a comfortable pace and enjoy the movement.",
+  five:"You're doing great! Keep that momentum. Every step is a little investment in your health.",
+  ten:"Look at you showing up for yourself! That's what matters. Stay comfortable, keep your pace, and enjoy the journey.",
+  fifteen:"You're building more than physical strength. You're building discipline, patience, and commitment. Keep going!",
+  twenty:"Every step counts. Don't worry about how far you have left. Focus on the step you're taking right now.",
+  thirty:"Amazing effort! Take a moment to appreciate how far you've come. Stay comfortable, hydrate when you need to, and keep moving if you feel good.",
+  repeat:"You're still showing up, and that matters. Keep a steady, comfortable pace. You've got this!",
+  finish:"Session complete! Well done. You made time for yourself today, and that's a victory worth celebrating. Recover well and come back stronger!",
+  distance:"You've covered {distance} kilometres. Fantastic effort! Take a moment to feel proud of that progress."
+};
+function setCoachMessage(message){
+  const el=document.getElementById('coachMessage');
+  if(el)el.textContent='“'+message+'”';
+}
+function speakCoach(message){
+  setCoachMessage(message);
+  if(!coachVoiceEnabled)return;
   if('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window){
     window.speechSynthesis.cancel();
-    const utterance=new SpeechSynthesisUtterance(phrase);
-    utterance.rate=0.95;utterance.pitch=1.05;utterance.volume=1;
+    const utterance=new SpeechSynthesisUtterance(message);
+    utterance.rate=0.94;
+    utterance.pitch=1.04;
+    utterance.volume=1;
     window.speechSynthesis.speak(utterance);
   }else{
     playFocusBeep();
+  }
+}
+function movementEncouragement(elapsedSeconds){
+  const minutes=Math.floor(elapsedSeconds/60);
+  let key='repeat';
+  if(minutes===5)key='five';
+  else if(minutes===10)key='ten';
+  else if(minutes===15)key='fifteen';
+  else if(minutes===20)key='twenty';
+  else if(minutes===30)key='thirty';
+  speakCoach(coachMessages[key]);
+}
+function announceDistanceMilestone(){
+  const wholeKm=Math.floor(exerciseDistanceMeters/1000);
+  if(wholeKm>lastDistanceMilestone){
+    lastDistanceMilestone=wholeKm;
+    speakCoach(coachMessages.distance.replace('{distance}',wholeKm.toFixed(0)));
   }
 }
 function distanceBetween(a,b){
@@ -329,6 +388,7 @@ function exercisePosition(position){
     if(meters>=2&&meters<=100&&speed<=8)exerciseDistanceMeters+=meters;
   }
   exerciseLastPosition=point;
+  announceDistanceMilestone();
   document.getElementById('exerciseStatus').textContent='GPS tracking active · Accuracy about '+Math.round(c.accuracy)+' m';
   renderExercise();
 }
@@ -347,7 +407,7 @@ function startExerciseClock(){
     const elapsed=exerciseSeconds();
     if(elapsed-exerciseLastAnnouncement>=300){
       exerciseLastAnnouncement=Math.floor(elapsed/300)*300;
-      movementEncouragement();
+      movementEncouragement(exerciseLastAnnouncement);
     }
   },1000);
 }
@@ -357,6 +417,8 @@ function startExercise(){
     return;
   }
   exerciseActive=true;exercisePaused=false;exerciseStartedAt=Date.now();exerciseLastPosition=null;
+  lastDistanceMilestone=0;
+  speakCoach(coachMessages.welcome);
   document.getElementById('exerciseStatus').textContent='Requesting GPS location permission…';
   renderExercise();startExerciseClock();
   exerciseWatchId=navigator.geolocation.watchPosition(exercisePosition,exerciseLocationError,{
@@ -392,6 +454,7 @@ document.getElementById('exerciseFinish').onclick=()=>{
   const session={date:iso(new Date()),distanceKm:Number((exerciseDistanceMeters/1000).toFixed(3)),durationSeconds:seconds};
   exerciseSessions.push(session);
   localStorage.setItem(EXERCISE_KEY,JSON.stringify(exerciseSessions));
+  speakCoach(coachMessages.finish);
   document.getElementById('exerciseStatus').textContent=`Session saved · ${session.distanceKm.toFixed(2)} km in ${formatExerciseTime(seconds)}.`;
   renderExercise();renderExerciseHistory();
 };
@@ -404,6 +467,21 @@ function renderExerciseHistory(){
     ?`${exerciseSessions.length} sessions · ${km.toFixed(2)} km total · ${formatExerciseTime(secs)} moving time`
     :'No completed GPS sessions yet.';
 }
+
+
+const coachToggle=document.getElementById('coachVoiceToggle');
+if(coachToggle){
+  coachToggle.checked=coachVoiceEnabled;
+  coachToggle.addEventListener('change',()=>{
+    coachVoiceEnabled=coachToggle.checked;
+    localStorage.setItem(COACH_VOICE_KEY,String(coachVoiceEnabled));
+    if(!coachVoiceEnabled && 'speechSynthesis' in window)window.speechSynthesis.cancel();
+  });
+}
+const coachTest=document.getElementById('coachTest');
+if(coachTest)coachTest.addEventListener('click',()=>{
+  speakCoach("Hi, I'm MoveMate, your personal movement coach. I'll celebrate your progress and encourage you every five minutes. Let's make today count!");
+});
 
 if(!localStorage.getItem(KEY))save();render();showTime();renderExercise();renderExerciseHistory();
 
