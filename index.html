@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#101611">
+<meta name="description" content="A 365-day habit, focus and productivity tracker.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="365 Tracker">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
 <title>365 — One year, one promise</title>
 <style>
 :root{--bg:#0c110e;--panel:#141c17;--panel2:#19231d;--line:#29372e;--text:#edf4ee;--muted:#91a397;--green:#a8e6b5;--green2:#5fc77c;--amber:#e8c47b;--red:#e68c83}
@@ -15,15 +22,29 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}.app{max-width:1
 @media(max-width:720px){.app{padding:17px 13px 40px}.hero{grid-template-columns:1fr}.hero-side{min-height:170px}.content{grid-template-columns:1fr}.top{margin-bottom:18px}.date-pill{font-size:10px}.hero-main,.hero-side,.panel{padding:17px}.insights{grid-template-columns:1fr 1fr}.insight:last-child{grid-column:span 2}}
 </style></head>
 <body><div class="app">
-<header class="top"><div class="brand"><div class="mark">365</div><div><h1>ONE YEAR PROJECT</h1><p>Small actions. A different life.</p></div></div><div class="date-pill" id="todayLabel"></div></header>
+<header class="top"><div class="brand"><div class="mark">365</div><div><h1>ONE YEAR PROJECT</h1><p>Small actions. A different life.</p></div></div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="icon-btn" id="installBtn" type="button">Install app</button><div class="date-pill" id="todayLabel"></div></div></header>
 <section class="hero"><div class="hero-main"><div class="eyebrow">Your year starts with today</div><h2>Become who you<br><span>said you would.</span></h2><p class="sub">No perfect days required. Show up, record the truth, and keep moving.</p><div class="progress-line"><i id="yearBar"></i></div><div class="progress-meta"><span id="dayCount">Day 1 of 365</span><span id="yearPercent">0% complete</span></div></div>
 <div class="hero-side"><div><div class="stat-label">TODAY'S SCORE</div><div class="big-number" id="score">0%</div><div class="stat-label" id="scoreCaption">Start with one small win.</div></div><div class="mini-stats"><div class="mini"><strong id="streak">0</strong><span>DAY STREAK</span></div><div class="mini"><strong id="totalDone">0</strong><span>CHECK-INS</span></div></div></div></section>
 <nav class="tabs"><button class="tab active" data-tab="today">Today</button><button class="tab" data-tab="year">Year view</button><button class="tab" data-tab="insights">Insights</button></nav>
 <section id="todayView" class="content"><div class="panel"><div class="panel-head"><div><h3>Daily commitments</h3><div class="muted" id="dateSub">Keep the promises you make to yourself.</div></div><button class="icon-btn" id="editDate">Change date</button></div><div class="habit-list" id="habitList"></div><div class="add-row"><input class="field" id="newHabit" placeholder="Add a commitment…"><button class="primary" id="addHabit">Add</button></div></div>
 <div class="right-stack"><div class="panel"><div class="panel-head"><div><h3>Focus session</h3><div class="muted">One thing at a time.</div></div><span class="tag">DEEP WORK</span></div><div class="focus-box"><div class="muted">TIME REMAINING</div><div class="focus-time" id="timer">25:00</div><div class="focus-actions"><button class="primary" id="timerStart">Start</button><button class="secondary" id="timerReset">Reset</button></div></div></div>
+<div class="panel"><div class="panel-head"><div><h3>Outdoor movement</h3><div class="muted">Track your walk or run with GPS.</div></div><span class="tag">GPS TRACKING</span></div>
+<div class="focus-box">
+  <div class="insights" style="grid-template-columns:1fr 1fr;gap:8px">
+    <div class="insight"><strong id="exerciseDistance">0.00</strong><span>DISTANCE (KM)</span></div>
+    <div class="insight"><strong id="exerciseDuration">00:00</strong><span>ELAPSED TIME</span></div>
+  </div>
+  <div class="muted" id="exerciseStatus" style="margin:12px 0">Ready when you are. Allow location access to begin.</div>
+  <div class="focus-actions">
+    <button class="primary" id="exerciseStart">Start</button>
+    <button class="secondary" id="exercisePause" disabled>Pause</button>
+    <button class="secondary" id="exerciseFinish" disabled>Finish</button>
+  </div>
+  <div class="muted" style="margin-top:10px">A spoken “Keep going and keep moving!” reminder plays every five active minutes.</div>
+</div></div>
 <div class="panel"><h3>How was today?</h3><div class="muted">A quick check-in, without judgement.</div><div class="mood-row" id="moods"><button class="mood" data-mood="1">😞</button><button class="mood" data-mood="2">😕</button><button class="mood" data-mood="3">😐</button><button class="mood" data-mood="4">🙂</button><button class="mood" data-mood="5">🔥</button></div><textarea class="field notes" id="dayNote" placeholder="What went well? What did you learn? What will you improve tomorrow?"></textarea><button class="secondary" style="margin-top:9px;width:100%" id="saveNote">Save reflection</button></div></div></section>
 <section id="yearView" class="panel hidden"><div class="panel-head"><div><h3>Your consistency map</h3><div class="muted">Every square is a day. Tap one to review it.</div></div><span class="tag">365 DAYS</span></div><div class="year-wrap"><div class="heatmap" id="heatmap"></div></div><div class="legend">Less <i></i><i></i><i></i><i></i> More</div><div class="muted" id="heatCaption" style="margin-top:14px"></div></section>
-<section id="insightsView" class="panel hidden"><div class="panel-head"><div><h3>Your progress, honestly.</h3><div class="muted">Look for patterns, not perfection.</div></div><button class="icon-btn" id="exportBtn">Export backup</button></div><div class="insights"><div class="insight"><strong id="insTotal">0</strong><span>TOTAL CHECK-INS</span></div><div class="insight"><strong id="insRate">0%</strong><span>OVERALL COMPLETION</span></div><div class="insight"><strong id="insBest">0</strong><span>BEST DAY SCORE</span></div></div><div style="margin-top:25px"><h3>Last 7 days</h3><div class="week-bars" id="weekBars"></div></div><div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:24px"><button class="secondary" id="manageBtn">Manage commitments</button><button class="secondary" id="importBtn">Import backup</button><input type="file" id="importFile" accept="application/json" class="hidden"></div><p class="muted" style="margin-top:16px">Your records are saved in this browser on this device. Export a backup regularly so you can restore them if you clear browser data or change devices.</p></section>
+<section id="insightsView" class="panel hidden"><div class="panel-head"><div><h3>Your progress, honestly.</h3><div class="muted">Look for patterns, not perfection.</div></div><button class="icon-btn" id="exportBtn">Export backup</button></div><div class="insights"><div class="insight"><strong id="insTotal">0</strong><span>TOTAL CHECK-INS</span></div><div class="insight"><strong id="insRate">0%</strong><span>OVERALL COMPLETION</span></div><div class="insight"><strong id="insBest">0</strong><span>BEST DAY SCORE</span></div></div><div style="margin-top:25px"><h3>Last 7 days</h3><div class="week-bars" id="weekBars"></div></div><div style="margin-top:25px"><h3>Movement history</h3><div class="muted" id="exerciseHistory">No completed GPS sessions yet.</div></div><div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:24px"><button class="secondary" id="manageBtn">Manage commitments</button><button class="secondary" id="importBtn">Import backup</button><input type="file" id="importFile" accept="application/json" class="hidden"></div><p class="muted" style="margin-top:16px">Your records are saved in this browser on this device. Export a backup regularly so you can restore them if you clear browser data or change devices.</p></section>
 <div class="footer">365 · Progress over perfection · Your data stays on this device</div></div>
 <div class="modal hidden" id="dateModal"><div class="modal-card"><h3>Open a day</h3><p class="muted">Review or update a previous day in your 365-day journey.</p><input class="field" type="date" id="dateInput"><div class="modal-actions"><button class="secondary" id="cancelDate">Cancel</button><button class="primary" id="applyDate">Open day</button></div></div></div>
 <script>
@@ -56,10 +77,244 @@ document.getElementById('editDate').onclick=()=>{document.getElementById('dateIn
 document.getElementById('heatmap').addEventListener('click',e=>{const b=e.target.closest('[data-day]');if(b){selected=b.dataset.day;dayData(selected);render();document.querySelector('[data-tab="today"]').click()}});
 document.querySelectorAll('.mood').forEach(b=>b.onclick=()=>{dayData(selected).mood=+b.dataset.mood;save();render()});document.getElementById('saveNote').onclick=()=>{dayData(selected).note=document.getElementById('dayNote').value;save();const b=document.getElementById('saveNote');b.textContent='Saved ✓';setTimeout(()=>b.textContent='Save reflection',1200)};
 function showTime(){document.getElementById('timer').textContent=String(Math.floor(timerSeconds/60)).padStart(2,'0')+':'+String(timerSeconds%60).padStart(2,'0')}
-document.getElementById('timerStart').onclick=()=>{if(timerInterval){clearInterval(timerInterval);timerInterval=null;document.getElementById('timerStart').textContent='Resume';return}document.getElementById('timerStart').textContent='Pause';timerInterval=setInterval(()=>{timerSeconds--;showTime();if(timerSeconds<=0){clearInterval(timerInterval);timerInterval=null;document.getElementById('timerStart').textContent='Start';alert('Focus session complete. Take a short break!')}},1000)};
-document.getElementById('timerReset').onclick=()=>{clearInterval(timerInterval);timerInterval=null;timerSeconds=1500;showTime();document.getElementById('timerStart').textContent='Start'};
+
+// The browser only allows audio after a user gesture. We create/resume the
+// audio context when the user presses Start, then play one beep at zero.
+let focusAudioContext = null;
+function playFocusBeep(){
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    if (!focusAudioContext) focusAudioContext = new AudioContextClass();
+    if (focusAudioContext.state === 'suspended') focusAudioContext.resume();
+
+    const oscillator = focusAudioContext.createOscillator();
+    const gain = focusAudioContext.createGain();
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(880, focusAudioContext.currentTime);
+    gain.gain.setValueAtTime(0.0001, focusAudioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.22, focusAudioContext.currentTime + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, focusAudioContext.currentTime + 0.45);
+    oscillator.connect(gain);
+    gain.connect(focusAudioContext.destination);
+    oscillator.start();
+    oscillator.stop(focusAudioContext.currentTime + 0.46);
+  } catch (error) {
+    console.warn('The focus completion sound could not be played:', error);
+  }
+}
+
+document.getElementById('timerStart').onclick=()=>{
+  if(timerInterval){
+    clearInterval(timerInterval);
+    timerInterval=null;
+    document.getElementById('timerStart').textContent='Resume';
+    return;
+  }
+  // Unlock audio during this direct user interaction for mobile browsers.
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) {
+      if (!focusAudioContext) focusAudioContext = new AudioContextClass();
+      if (focusAudioContext.state === 'suspended') focusAudioContext.resume();
+    }
+  } catch (error) {}
+  document.getElementById('timerStart').textContent='Pause';
+  timerInterval=setInterval(()=>{
+    timerSeconds--;
+    showTime();
+    if(timerSeconds<=0){
+      clearInterval(timerInterval);
+      timerInterval=null;
+      playFocusBeep();
+      document.getElementById('timerStart').textContent='Start';
+      alert('Focus session complete. Take a short break!');
+    }
+  },1000);
+};
+document.getElementById('timerReset').onclick=()=>{
+  clearInterval(timerInterval);
+  timerInterval=null;
+  timerSeconds=1500;
+  showTime();
+  document.getElementById('timerStart').textContent='Start';
+};
 document.getElementById('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='365-productivity-backup.json';a.click();URL.revokeObjectURL(a.href)};
 document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();document.getElementById('importFile').onchange=async e=>{try{const x=JSON.parse(await e.target.files[0].text());if(!x.habits||!x.days)throw Error();data=x;save();selected=today;render();alert('Backup restored.')}catch(err){alert('That backup file could not be read.')}};
 document.getElementById('manageBtn').onclick=()=>{const name=prompt('Enter a new commitment to add. To remove one, use the × beside it on Today.');if(name&&name.trim()){data.habits.push({id:'h'+Date.now(),name:name.trim(),detail:'Your personal commitment',category:'Personal'});save();render()}};
-if(!localStorage.getItem(KEY))save();render();showTime();
+
+// Outdoor GPS tracking. Requires HTTPS and explicit location permission.
+const EXERCISE_KEY='365_exercise_sessions_v1';
+let exerciseSessions=[];
+try{exerciseSessions=JSON.parse(localStorage.getItem(EXERCISE_KEY)||'[]');if(!Array.isArray(exerciseSessions))exerciseSessions=[];}catch(e){exerciseSessions=[];}
+let exerciseWatchId=null,exerciseActive=false,exercisePaused=false;
+let exerciseStartedAt=null,exerciseElapsedBeforePause=0,exerciseLastPosition=null;
+let exerciseDistanceMeters=0,exerciseTick=null,exerciseLastAnnouncement=0;
+
+function exerciseSeconds(){
+  return exerciseElapsedBeforePause+(exerciseActive&&!exercisePaused&&exerciseStartedAt
+    ?Math.floor((Date.now()-exerciseStartedAt)/1000):0);
+}
+function formatExerciseTime(seconds){
+  const m=Math.floor(seconds/60),s=seconds%60;
+  return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+function renderExercise(){
+  document.getElementById('exerciseDistance').textContent=(exerciseDistanceMeters/1000).toFixed(2);
+  document.getElementById('exerciseDuration').textContent=formatExerciseTime(exerciseSeconds());
+  document.getElementById('exerciseStart').disabled=exerciseActive;
+  document.getElementById('exercisePause').disabled=!exerciseActive;
+  document.getElementById('exerciseFinish').disabled=!exerciseActive;
+  document.getElementById('exercisePause').textContent=exercisePaused?'Resume':'Pause';
+}
+function movementEncouragement(){
+  const phrase='Keep going and keep moving!';
+  if('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window){
+    window.speechSynthesis.cancel();
+    const utterance=new SpeechSynthesisUtterance(phrase);
+    utterance.rate=0.95;utterance.pitch=1.05;utterance.volume=1;
+    window.speechSynthesis.speak(utterance);
+  }else{
+    playFocusBeep();
+  }
+}
+function distanceBetween(a,b){
+  const rad=n=>n*Math.PI/180,earth=6371000;
+  const dLat=rad(b.latitude-a.latitude),dLon=rad(b.longitude-a.longitude);
+  const lat1=rad(a.latitude),lat2=rad(b.latitude);
+  const h=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
+  return 2*earth*Math.asin(Math.sqrt(h));
+}
+function clearExerciseGPS(){
+  if(exerciseWatchId!==null){navigator.geolocation.clearWatch(exerciseWatchId);exerciseWatchId=null;}
+}
+function exercisePosition(position){
+  if(!exerciseActive||exercisePaused)return;
+  const c=position.coords;
+  if(c.accuracy>40){
+    document.getElementById('exerciseStatus').textContent='GPS signal is weak. Move to a clearer area for a better reading.';
+    return;
+  }
+  const point={latitude:c.latitude,longitude:c.longitude,timestamp:position.timestamp};
+  if(exerciseLastPosition){
+    const meters=distanceBetween(exerciseLastPosition,point);
+    const seconds=Math.max(1,(point.timestamp-exerciseLastPosition.timestamp)/1000);
+    const speed=meters/seconds;
+    // Filter small GPS jitter, big jumps, and implausible walking/running speed.
+    if(meters>=2&&meters<=100&&speed<=8)exerciseDistanceMeters+=meters;
+  }
+  exerciseLastPosition=point;
+  document.getElementById('exerciseStatus').textContent='GPS tracking active · Accuracy about '+Math.round(c.accuracy)+' m';
+  renderExercise();
+}
+function exerciseLocationError(error){
+  const messages={
+    1:'Location permission denied. Allow location access in your browser settings.',
+    2:'Location unavailable. Check that your phone location/GPS is enabled.',
+    3:'GPS timed out. Try again somewhere with a clearer signal.'
+  };
+  document.getElementById('exerciseStatus').textContent=messages[error.code]||'Unable to read your location.';
+}
+function startExerciseClock(){
+  clearInterval(exerciseTick);
+  exerciseTick=setInterval(()=>{
+    renderExercise();
+    const elapsed=exerciseSeconds();
+    if(elapsed-exerciseLastAnnouncement>=300){
+      exerciseLastAnnouncement=Math.floor(elapsed/300)*300;
+      movementEncouragement();
+    }
+  },1000);
+}
+function startExercise(){
+  if(!navigator.geolocation){
+    document.getElementById('exerciseStatus').textContent='This browser does not support GPS tracking.';
+    return;
+  }
+  exerciseActive=true;exercisePaused=false;exerciseStartedAt=Date.now();exerciseLastPosition=null;
+  document.getElementById('exerciseStatus').textContent='Requesting GPS location permission…';
+  renderExercise();startExerciseClock();
+  exerciseWatchId=navigator.geolocation.watchPosition(exercisePosition,exerciseLocationError,{
+    enableHighAccuracy:true,maximumAge:2000,timeout:15000
+  });
+}
+document.getElementById('exerciseStart').onclick=()=>{
+  if(exerciseActive)return;
+  exerciseDistanceMeters=0;exerciseElapsedBeforePause=0;exerciseLastAnnouncement=0;
+  startExercise();
+};
+document.getElementById('exercisePause').onclick=()=>{
+  if(!exerciseActive)return;
+  if(!exercisePaused){
+    exerciseElapsedBeforePause=exerciseSeconds();exercisePaused=true;
+    clearExerciseGPS();clearInterval(exerciseTick);
+    document.getElementById('exerciseStatus').textContent='Paused. Your progress is being held.';
+  }else{
+    exercisePaused=false;exerciseStartedAt=Date.now();exerciseLastPosition=null;
+    document.getElementById('exerciseStatus').textContent='Resuming GPS tracking…';
+    exerciseWatchId=navigator.geolocation.watchPosition(exercisePosition,exerciseLocationError,{
+      enableHighAccuracy:true,maximumAge:2000,timeout:15000
+    });
+    startExerciseClock();
+  }
+  renderExercise();
+};
+document.getElementById('exerciseFinish').onclick=()=>{
+  if(!exerciseActive)return;
+  const seconds=exerciseSeconds();
+  clearExerciseGPS();clearInterval(exerciseTick);
+  exerciseActive=false;exercisePaused=false;exerciseElapsedBeforePause=seconds;exerciseStartedAt=null;
+  const session={date:iso(new Date()),distanceKm:Number((exerciseDistanceMeters/1000).toFixed(3)),durationSeconds:seconds};
+  exerciseSessions.push(session);
+  localStorage.setItem(EXERCISE_KEY,JSON.stringify(exerciseSessions));
+  document.getElementById('exerciseStatus').textContent=`Session saved · ${session.distanceKm.toFixed(2)} km in ${formatExerciseTime(seconds)}.`;
+  renderExercise();renderExerciseHistory();
+};
+function renderExerciseHistory(){
+  const el=document.getElementById('exerciseHistory');
+  if(!el)return;
+  const km=exerciseSessions.reduce((sum,x)=>sum+(Number(x.distanceKm)||0),0);
+  const secs=exerciseSessions.reduce((sum,x)=>sum+(Number(x.durationSeconds)||0),0);
+  el.textContent=exerciseSessions.length
+    ?`${exerciseSessions.length} sessions · ${km.toFixed(2)} km total · ${formatExerciseTime(secs)} moving time`
+    :'No completed GPS sessions yet.';
+}
+
+if(!localStorage.getItem(KEY))save();render();showTime();renderExercise();renderExerciseHistory();
+
+// PWA installation: supported browsers can show the native install prompt.
+let deferredInstallPrompt = null;
+const installButton = document.getElementById('installBtn');
+
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  installButton.textContent = 'Install app';
+});
+
+installButton.addEventListener('click', async () => {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    return;
+  }
+  alert('To install 365:\\n\\nAndroid: Open this page in Chrome, tap ⋮, then choose Install app or Add to Home screen.\\n\\niPhone: Open this page in Safari, tap Share, then Add to Home Screen.');
+});
+
+window.addEventListener('appinstalled', () => {
+  installButton.textContent = 'Installed ✓';
+  installButton.disabled = true;
+});
+
+// Register the service worker so the app shell can be opened offline
+// after the first successful visit.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(error => {
+      console.error('Service worker registration failed:', error);
+    });
+  });
+}
+
 </script></body></html>
