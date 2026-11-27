@@ -1,43 +1,19 @@
-# 365 — One Year Project (Installable PWA)
+# 365 — One Year Project
 
-## Publish on GitHub Pages
-Upload the contents of this folder to the ROOT of the existing
-`365-productivity-tracker` repository, keeping the `icons` folder.
+## Deploy the polished version
+Upload the contents of this folder to the ROOT of your existing GitHub Pages repository. Keep the `icons` folder.
 
-The repository root should contain:
-- index.html
-- manifest.webmanifest
-- sw.js
-- icons/icon-192.png
-- icons/icon-512.png
+Files: `index.html`, `manifest.webmanifest`, `sw.js`, `icons/icon-192.png`, `icons/icon-512.png`.
 
-Commit and push the changes. GitHub Pages will redeploy the site.
+Commit and push the changes. The service worker cache is versioned `365-productivity-v3` to refresh installed copies.
 
 ## Install on Android
-1. Open https://zakariya772.github.io/365-productivity-tracker/ in Chrome.
-2. Tap the Install app button on the page, or Chrome's ⋮ menu.
-3. Choose Install app (or Add to Home screen) and confirm.
+Open your GitHub Pages URL in Chrome and choose Install app from the page or Chrome menu.
 
 ## Install on iPhone
-1. Open the same URL in Safari.
-2. Tap Share.
-3. Choose Add to Home Screen, then Add.
+Open the URL in Safari, tap Share, then Add to Home Screen.
 
-## Offline use
-Open the app online once so the service worker can cache the app shell.
-The application shell can then load offline. Habit records are stored in
-the browser's localStorage on that device; export a backup regularly.
+## Features retained
+Daily habit tracking, 365-day heatmap, focus timer with completion beep, GPS exercise distance and duration tracking, five-minute spoken encouragement, reflections, insights, and local backup.
 
-## Updating later
-When you publish a new release, change CACHE_NAME in sw.js, for example
-from `365-productivity-v1` to `365-productivity-v2`, so installed copies
-replace their old cached app shell.
-
-
-## Outdoor movement GPS tracker
-- Start an outdoor session and allow location access.
-- GPS updates estimate distance using a great-circle distance calculation.
-- Pause/resume and finish controls are provided; completed sessions are summarized in Insights.
-- A spoken “Keep going and keep moving!” reminder plays every five active minutes when browser speech synthesis is supported.
-- GPS requires HTTPS and location permission. Accuracy depends on the phone and GPS reception.
-- Mobile browsers may suspend tracking when the app is backgrounded or the screen is locked. Keep the app open and screen awake for the most reliable results.
+GPS needs HTTPS and location permission. Mobile browsers can suspend GPS and timers while backgrounded or when the screen is locked, so keep the app open for the most reliable tracking. Data is stored locally in the browser; export backups regularly.
